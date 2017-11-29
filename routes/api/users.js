@@ -6,6 +6,9 @@ const jwt = require("jwt-simple");
 const passportService = require("../../passport");
 const requireLogin = passport.authenticate("local", { session: false });
 
+//var User = require(../../models/User)   calling the user shizz
+const User = mongoose.model("User");
+
 //User login. payload will have user object with email and password
 userRouter.route("/login").post(requireLogin, function(req, res, next) {
   //here we'll do our passport auth to check for user in local db
@@ -14,6 +17,23 @@ userRouter.route("/login").post(requireLogin, function(req, res, next) {
     email: req.user.email
   })
 });
+
+//resgister stuff below 
+userRouter.route("/").post(function(req,res,next){
+  var user = new User();
+  user.username = req.body.username;
+  user.email = req.body.email;
+  // make it so password isnt saved as plain text
+  user.setPassword(req.body.password);
+
+  user.save(function(err,userPayload){
+    if(err){
+      next(err);
+    } else{
+      res.json({user: jsonForUser(userPayload)});
+    }
+  })
+})
 
 function tokenForUser(user) {
   const timestamp = new Date().getTime();
@@ -25,6 +45,17 @@ function tokenForUser(user) {
     },
     process.env.SUPER_JWT_SECRET
   );
+}
+
+//return user payload (send back only what we want to be sent back)
+function jsonForUser(user) {
+  return{
+    username: user.username,
+    email: user.email,
+    token: tokenForUser(user)
+    //bio: this.bio,
+    //image: this.image
+  };
 }
 
 module.exports = userRouter;
