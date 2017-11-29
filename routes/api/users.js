@@ -5,9 +5,25 @@ const jwt = require("jwt-simple");
 
 const passportService = require("../../passport");
 const requireLogin = passport.authenticate("local", { session: false });
+const auth = require("../auth");
 
-//var User = require(../../models/User)   calling the user shizz
 const User = mongoose.model("User");
+
+//Send user their profile inJERK (index)
+userRouter.route("/").get(auth.required, function(req,res,next){
+  console.log(req.payload);
+  User.findById(req.payload.sub).then(function(userPayload){
+    if (!userPayload){
+      return res.sendStatus(401);
+    }
+
+    return res.json({
+      user: jsonForUser(userPayload),
+      song: "la-la-la"
+    });
+  })
+  .catch(next);
+});
 
 //User login. payload will have user object with email and password
 userRouter.route("/login").post(requireLogin, function(req, res, next) {
