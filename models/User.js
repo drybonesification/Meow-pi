@@ -21,15 +21,15 @@ UserSchema.pre("save", function(next) {
 });
 
 UserSchema.methods.comparePassword = function(candidatePassword, callback) {
- var candidateHash = crypto.pbkdf2Sync(candidatePassword, this.salt, 10000, 512, "sha512").toString("hex");
- if(!candidateHash) {
-   const err = new Error("Failed Hash");
-   callback(err, false);
- } else if (this.hash === candidateHash){
-   callback(null, true);
- } else {
-   callback(null, false)
- }
+var candidateHash = crypto.pbkdf2Sync(candidatePassword, this.salt, 10000, 512, "sha512").toString("hex");
+if(!candidateHash) {
+  const err = new Error("Failed Hash");
+  callback(err, false);
+} else if (this.hash === candidateHash){
+  callback(null, true);
+} else {
+  callback(null, false)
+}
 };
 
 //export for uses
