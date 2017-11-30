@@ -19,6 +19,24 @@ Article.find({})
 });
 })
 
+articleRouter.route("/:slug").get(auth.required, function(req,res,next){
+      const slug = req.params.slug;
+      Article.findOne({slug: slug}).populate("author").then(function(article){
+            if(!article){
+                  return res.sendStatus(404);
+            }
+            res.send({article: article.toJSONFor()});
+      }).catch(next);
+})
+
+//get comments for article?
+articleRouter.route("/:slug/comments").get(auth.required,function(req,res,next){
+
+})
+//just one comment
+articleRouter.route("/:slug/comments/:commentsId").delete(auth.required,function(req,res,next){
+
+})
 articleRouter.route("/").post(auth.required, function(req, res, next) {
       User.findById(req.payload.sub)
       .then(function(user) {

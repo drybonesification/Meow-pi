@@ -35,7 +35,7 @@ ArticleSchema.methods.toJSONFor = function(user){
     body: this.body,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
-    author: this.author.toJSONFor(user)
+    author: this.author.toProfileJSONFor(user)
   }
 }
 
